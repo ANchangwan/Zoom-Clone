@@ -14,13 +14,25 @@ app.get("/", (req,res)=>{
 })
 
 const handleListen = () =>{
-    console.log("Listening on ws://localhost:3000");
+    console.log("Listening on http://localhost:3000");
 }
 
 const server = http.createServer(app);
 
 const wss = new WebSocket.Server({
     server
+});
+
+
+wss.on("connection", (socket)=>{
+    console.log("Connect to Browser");
+    socket.on("close", () =>{
+        console.log("disconnect");
+    })
+    socket.on("message", (message) =>{
+        console.log(message.toString());
+    })
+    socket.send("hello!!");
 });
 
 server.listen(3000, handleListen);
