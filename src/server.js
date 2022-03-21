@@ -23,16 +23,20 @@ const wss = new WebSocket.Server({
     server
 });
 
+const sockets = [];
 
 wss.on("connection", (socket)=>{
+    sockets.push(socket);
     console.log("Connect to Browser");
     socket.on("close", () =>{
         console.log("disconnect");
     })
     socket.on("message", (message) =>{
-        console.log(message.toString());
+        sockets.forEach(aSocket => {
+            aSocket.send(message);
+        });
     })
-    socket.send("hello!!");
+    
 });
 
 server.listen(3000, handleListen);
