@@ -26,16 +26,24 @@ const wss = new WebSocket.Server({
 const sockets = [];
 
 wss.on("connection", (socket)=>{
+    console.log(sockets);
     sockets.push(socket);
+    socket["nickname"] = "Anon";
     console.log("Connect to Browser");
     socket.on("close", () =>{
         console.log("disconnect");
     })
-    socket.on("message", (message) =>{
-        sockets.forEach(aSocket => {
-            aSocket.send(message);
-        });
-    })
+    socket.on("message", (msg) =>{
+        const message = JSON.parse(msg);
+        switch (message.type) {
+            case "new_message":
+                sockets.forEach(aSocket => aSocket.send(`${socket.nickname}:${message.payload}`));
+                break;
+            case "nickname":
+                socket["nickname"] = message.payload;
+                break;
+        }
+    });
     
 });
 
